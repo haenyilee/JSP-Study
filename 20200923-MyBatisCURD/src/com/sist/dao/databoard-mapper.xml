@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.dao.databoard-mapper">
+	<!-- 값을 읽어오는 부분 : SELECT , 삭제 :DELETE, 수정: UPDATE, 추가: INSERT -->
+	<select id="boardListData" resultType="DataBoardVO" parameterType="hashmap">
+		SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,num
+		FROM(SELECT no,subject,name,regdate,hit,rownum as num
+		FROM(SELECT no,subject,name,regdate,hit
+		FROM databoard4 ORDER BY no DESC))
+		WHERE num BETWEEN #{start} AND #{end}	
+	</select>
+	<select id="boardTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/10.0) FROM databoard4
+	</select>
+	<!-- 내용보기 : 다운로드까지 -->
+	<!-- 중복 문장이 있는 경우 재사용하기 -->
+	<sql id="where-no">
+		WHERE no=#{no}
+	</sql>
+	<!-- 조회수 증가시키기  -->
+	<update id="hitIncrement" parameterType="int">
+		UPDATE databoard4 SET
+		hit=hit+1
+		<include refid="where-no"/>
+	</update>
+	<!-- 실제 데이터 읽기  -->
+	<select id="boardDetailData" resultType="DataBoardVO" parameterType="int">
+		SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,
+			hit,filename,filesize 
+		FROM databoard4
+		<include refid="where-no"/>	
+	</select>
+	<!-- 추가  -->
+	<!-- <insert id="boardInsert" parameterType="DataBoardVO">
+		INSERT INTO databoard4 VALUES(
+			(SELECT NVL(MAX(no)+1,1) FROM databoard4),#{name},#{subject},
+			#{content},#{pwd},SYSDATE,0,#{filename],#{filesize}
+		)
+	</insert> -->
+  <insert id="boardInsert" parameterType="DataBoardVO">
+    <!-- Sequence 
+         SELECT NVL(MAX(no)+1,1) FROM databoard을 먼저 수행한 후에
+                 결과값을 no에 받아서 
+         INSERT 문장에 추가
+    -->
+    <selectKey keyProperty="no" resultType="int" order="BEFORE">
+      SELECT NVL(MAX(no)+1,1) FROM databoard4
+    </selectKey>
+    INSERT INTO databoard4 VALUES(
+      #{no},
+      #{name},
+      #{subject},
+      #{content},
+      #{pwd},
+      SYSDATE,
+      0,
+      #{filename},
+      #{filesize}
+    )
+  </insert>
+	<!-- 수정  -->
+	<update id="boardUpdate" parameterType="DataBoardVO">
+		UPDATE databoard4 SET
+		name=#{name},
+		subject=#{subject},
+		content=#{content}
+		<include refid="where-no"/>
+	</update>
+	<!-- 삭제  -->
+	 <!-- 비밀번호 확인 -->
+  <select id="boardGetPassword" resultType="String" parameterType="int">
+    SELECT pwd FROM databoard4
+    <include refid="where-no"/>
+  </select>
+  <!-- 게시물이 삭제가 되면 업로드된 파일을 삭제 -->
+  <select id="boardGetInfoData" resultType="DataBoardVO" parameterType="int">
+    SELECT filename,filesize FROM databoard4
+    <include refid="where-no"/>
+  </select>
+  <!-- 본인일 경우에는 게시물을 삭제 -->
+  <delete id="boardDelete" parameterType="int">
+    DELETE FROM databoard4
+    <include refid="where-no"/>
+  </delete>
+	<!-- 찾기  -->
+	<select id="boardFindData" resultType="DataBoardVO" parameterType="hashmap">
+		SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday, hit
+		FROM databoard4
+		WHERE ${fd} LIKE '%'||#{ss}||'%'
+	</select>
+	<select id="boardFindCount" resultType="int" parameterType="hashmap">
+		SELECT COUNT(*)
+		FROM databoard4
+		WHERE ${fd} LIKE '%'||#{ss}||'%'
+	</select>
+</mapper>
