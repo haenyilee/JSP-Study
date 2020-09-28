@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" import="com.sist.dao.*"%>
 <%
-    // detail.jsp ==> 번호(게시물)
-    String no=request.getParameter("no");
-    // 다른 JSP에서 => 데이터값을 보내면 ==> request를 통해서 값을 받아 온다 
-    // 오라클에서 게시물 번호에 해당되는 데이터를 읽어 온다 
-    // 화면 출력 
-    DataBoardVO vo=DataBoardDAO.boardUpdateData(Integer.parseInt(no));
+     String no=request.getParameter("no");// submit버튼 클릭시에 전송되지 않는다 
+     /*
+         ../main/main.jsp?mode=12&no=3
+                         ======== ====
+                         mode => main.jsp => 화면 변경 요청 
+                         no => 수정할 데이터의 게시물 번호 
+     */
+     BoardVO vo=BoardDAO.freeBoardUpdateData(Integer.parseInt(no));
 %>
 <!DOCTYPE html>
 <html>
@@ -26,7 +28,7 @@
           multipart/form-data : 파일을 업로드 
                   범용적으로 사용되는 약속 
     --%>
-   <form method="post" action="../board/update_ok.jsp">
+   <form method="post" action="../freeboard/update_ok.jsp">
    <table class="table table-hover">
      <tr>
        <th class="danger text-right" width=15%>이름</th>
@@ -34,6 +36,7 @@
          <input type=text name=name size=15 class="input-sm" value="<%=vo.getName()%>">
          <%--게시물 번호를 첨부해 보내준다 --%>
          <input type=hidden name=no value="<%=no%>">
+         <%-- 사용자에게는 보여주지 않는다 , 데이터 전송에 포함해서 전송 가능 --%>
        </td>
      </tr>
      <tr>
@@ -48,12 +51,6 @@
          <textarea rows="10" cols="50" name=content><%=vo.getContent() %></textarea>
        </td>
      </tr>
-     <!-- <tr>
-       <th class="danger text-right" width=15%>첨부파일</th>
-       <td width=85%>
-         <input type=file name=upload size=20 class="input-sm">
-       </td>
-     </tr> -->
      <tr>
        <th class="danger text-right" width=15%>비밀번호</th>
        <td width=85%>

@@ -13,7 +13,7 @@
     {
     	response.setHeader("Content-Disposition", "attachment;filename="
     			                        +URLEncoder.encode(fn,"UTF-8"));
-    	File file=new File("/Users/haeni/Documents/WebDev/WebDev1/download/"+fn);
+    	File file=new File("c:\\download\\"+fn);
     	// 파일 크기
     	response.setContentLength((int)file.length());
     	
@@ -35,15 +35,9 @@
     	bis.close();// 서버의 파일 닫기
     	bos.close(); // 사용자의 파일 닫기
     }catch(Exception ex){}
-	
+    
 %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
 
-</body>
-</html>
+
+
+

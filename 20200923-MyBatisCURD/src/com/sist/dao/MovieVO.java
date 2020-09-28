@@ -1,33 +1,32 @@
 package com.sist.dao;
 /*
-이름       널?       유형            
--------- -------- ------------- 
-NO       NOT NULL NUMBER        
-CATENO            NUMBER        
-TITLE    NOT NULL VARCHAR2(200) 
-POSTER   NOT NULL VARCHAR2(300) 
-REGDATE           VARCHAR2(200) 
-GENRE    NOT NULL VARCHAR2(100) 
-GRADE    NOT NULL VARCHAR2(100) 
-ACTOR             VARCHAR2(100) 
-SCORE             VARCHAR2(20)  
-DIRECTOR NOT NULL VARCHAR2(100) 
-STROY             CLOB          
-KEY               VARCHAR2(50)
+ *   NO       NOT NULL NUMBER        
+	CATENO            NUMBER        
+	TITLE    NOT NULL VARCHAR2(200) 
+	POSTER   NOT NULL VARCHAR2(300) 
+	REGDATE           VARCHAR2(200) 
+	GENRE    NOT NULL VARCHAR2(100) 
+	GRADE    NOT NULL VARCHAR2(100) 
+	ACTOR             VARCHAR2(100) 
+	SCORE             VARCHAR2(20)  
+	DIRECTOR NOT NULL VARCHAR2(100) 
+	STORY             CLOB          
+	KEY               VARCHAR2(50) 
  */
-
+// JSP ==> Bean => 8장 
 public class MovieVO {
-	private int no;
-	private int cateno;
-	private String title;
-	private String poster;
-	private String regdate;
-	private String genre;
-	private String actor;
-	private String score;
-	private String director;
-	private String story;
-	private String key;
+    private int no;
+    private int cateno;
+    private String title;
+    private String poster;
+    private String regdate;
+    private String genre;
+    private String grade;
+    private String actor;
+    private String score;
+    private String director;
+    private String story;
+    private String key;
 	public int getNo() {
 		return no;
 	}
@@ -64,6 +63,12 @@ public class MovieVO {
 	public void setGenre(String genre) {
 		this.genre = genre;
 	}
+	public String getGrade() {
+		return grade;
+	}
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
 	public String getActor() {
 		return actor;
 	}
@@ -94,5 +99,5 @@ public class MovieVO {
 	public void setKey(String key) {
 		this.key = key;
 	}
-
+    
 }

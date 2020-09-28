@@ -1,14 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+    main.jsp ==> case등록 ==> 화면 변경 (번호설정)
+    DB관련 
+      => Config.xml
+         <mappers>
+           <mapper resource="">
+         </mappers>
+      => board-mapper.xml
+         <select> </select>
+      => BoardDAO 
+         SQL 읽고 출력 
+         
+      => JSP에서 화면 
+ -->
 <mapper namespace="com.sist.dao.board-mapper">
-	<select id="freeboardListData" resultType="com.sist.dao.BoardVO" parameterType="hashmap">
-		SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,num
-		FROM (SELECT no,subject,name,regdate,hit rownum as num
-		FROM (SELECT no,subject,name,regdate,hit 
-		FROM movie_board4 ORDER BY no DESC))
- 		WHERE num BERWEEN #{start} AND #{end}
- 	</select>
- 	<select id="boardTotalPage" resultType="int">
- 		SELECT CEIL((COUNT(*)/10.0) FROM movie_board4
- 	</select>
+  <select id="freeBoardListData" resultType="com.sist.dao.BoardVO" parameterType="hashmap">
+    <!-- 
+        hashmap => java.util.Map
+     -->
+     SELECT no,subject,name,TO_CHAR(regdate,'YYYY/MM/DD') as dbday,hit,num
+     FROM (SELECT no,subject,name,regdate,hit,rownum as num 
+     FROM (SELECT no,subject,name,regdate,hit 
+     FROM movie_board ORDER BY no DESC))
+     WHERE num BETWEEN #{start} AND #{end}
+  </select>
+  <insert id="freeBoardInsert" parameterType="com.sist.dao.BoardVO">
+    INSERT INTO movie_board VALUES(
+      mb_no_seq.nextval,
+      #{name},
+      #{subject},
+      #{content},
+      #{pwd},
+      SYSDATE,0
+    )
+  </insert>
+  <!--  상세보기  -->
+  <!-- 조회수 증가 -->
+  <update id="freeBoardHitIncrement" parameterType="int">
+    <!--  parameterType="int" : 게시물의 번호를 대입-->
+    UPDATE movie_board SET
+    hit=hit+1
+    WHERE no=#{no}
+  </update>
+  <!-- 
+         JSP => <a> button ==> 요청 
+         board-mapper.xml파일에 SQL문장 
+         BoardDAO => SQL문장을 읽어서 처리
+         JSP에 읽어온 데이터 출력 
+   -->
+  <!-- 실제 데이터 읽기 (내용보기) => 처리는 BoardDAO-->
+  <select id="freeBoardDetailData" resultType="com.sist.dao.BoardVO" parameterType="int">
+    SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit
+    FROM movie_board
+    WHERE no=#{no}
+  </select>
+  <!--  수정 -->
+  <select id="freeBoardGetPassword" resultType="String" parameterType="int">
+    <!-- 
+        resultType="String"
+        parameterType="int"   ==> 변수명 (데이터형)
+     -->
+     SELECT pwd FROM movie_board
+     WHERE no=#{no}
+     <!-- 본인 여부 확인 -->
+  </select>
+  <!-- 
+       <insert>
+       <update>
+       <delete>
+       =================  resultType은 없다 (결과값)
+       <select> == resultType
+   -->
+  <update id="freeBoardUpdate" parameterType="com.sist.dao.BoardVO">
+     UPDATE movie_board SET
+     name=#{name},
+     subject=#{subject},
+     content=#{content}
+     WHERE no=#{no}
+  </update>
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
