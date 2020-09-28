@@ -1,113 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- Mybatis plugin => 자동으로 기본 셋팅 -->
-<!-- 
-       mapper : SQL문장을 저장 
-                PreparedStatement => 전송
-                => 데이터 첨부 (?에 값을 채워주는 설정)
-                   =================
-                    parameterType
-                ResultSet => 결과값을 받는다 
-                => 어떤 클래스,변수로 받을지를 설정 
-                   ============ resultType
-                 
- -->
 <mapper namespace="com.sist.dao.databoard-mapper">
-  <!-- 값을 읽어오는 부분 : SELECT -->
-  <!-- 삭제 : delete , 수정 : update , 추가 : insert : 태그는 반드시 한개의 SQL문장만 설정 :CURD(Create(Insert) Update Read(Select) Delete)  -->
-  <!-- 데이터 읽기 : 페이지를 나눠서 처리 : 인라인뷰  -->
-  <!-- 
-         id => 식별자 (중복이 되면 안된다) => 문자를 앞에서 시작 (숫자는 뒤에 올 수 있다)
-         
-         ? ==> 일반 데이터형 
-               WHERE empno=?  => int
-               WHERE ename=?  => String
-         ? ? ? ? ? 
-         ========= => Map , DataBoardVO
-         
-         예)
-          <select id="a" resultType="int">
-            SELECT empno FROM emp ==> 정수한개 
-          </select>
-          
-          <select id="b" resultType="String">
-            SELECT ename FROM emp
-          </select>
-          
-          <select id="c" resultType="EmpVO"> ==> java.util.Map(VO에 존재하지 않는 변수가 있는 경우)
-             SELECT * FROM emp   ==> 데이터 8개
-          </select>
-          
-          <select id="d" resultType="java.util.Map">
-            SELECT SUM(sal),AVG(sal),COUNT(*),MAX(sal),MIN(sal)
-            FROM emp
-          </select>
-   -->
-   <!-- 
-     w  hashmap => java.util.Map
-    -->
-  <select id="boardListData" resultType="DataBoardVO" parameterType="hashmap">
-     SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,num 
-     FROM (SELECT no,subject,name,regdate,hit,rownum as num 
-     FROM (SELECT no,subject,name,regdate,hit 
-     FROM databoard ORDER BY no DESC))
-     WHERE num BETWEEN #{start} AND #{end}
-     <!-- start , end => Map에 설정한 key이름 
-          get("start")
-         String sql= "SELECT no,subject,name,regdate,hit,num 
-				     FROM (SELECT no,subject,name,regdate,hit,rownum as num 
-				     FROM (SELECT no,subject,name,regdate,hit 
-				     FROM databoard ORDER BY no DESC))
-				     WHERE num BETWEEN ? AND ?"
-	     
-	     ps=conn.preparedStatement(sql);
-	     // 실행하지 전에  ?에 값을 채운다 
-	     ps.setInt(1,map.get("start")); ==> parameterType
-	     ps.setInt(2,map.get("end"))
-	     ==> Map
-	     map.put("end",10);
-	     map.put("start",1);
-	     
-	     ResultSet rs=ps.executeQuery();
-	     while(rs.next())
-	     {
-	         DataBoardVO vo=new DataBoardVO(); => resultType
-	     }
-     -->
-  </select>
-  <select id="boardTotalPage" resultType="int">
-    SELECT CEIL(COUNT(*)/10.0) FROM databoard
-  </select>
-  <!-- 내용보기 : 다운로드 -->
-  <!-- 중복된 문장이 있는 경우 처리:재사용 -->
-  <sql id="where-no">
-    WHERE no=#{no}
-  </sql>
-  <!-- 조회수 증가 -->
-  <update id="hitIncrement" parameterType="int">
-    UPDATE databoard SET
-    hit=hit+1
-    <include refid="where-no"/>
-  </update>
-  <!-- 실제 데이터 읽기 -->
-  <select id="boardDetailData" resultType="DataBoardVO" parameterType="int">
-    SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,
-           hit,filename,filesize 
-    FROM databoard
-    <include refid="where-no"/>
-  </select>
-  <!-- 추가  -->
-  <!-- DataBoardVO  #{name} vo.getName() , #{pwd} vo.getPwd()-->
-  <!--  Map에 데이터를 묶어서 전송 , VO에 데이터를 묶어서 전송  
-        VO에 소속된 변수 => VO
-        VO에 없는 변수가 있는 경우 => Map
-  -->
-  <!-- <insert id="boardInsert" parameterType="DataBoardVO">
-    INSERT INTO databoard VALUES(
-      (SELECT NVL(MAX(no)+1,1) FROM databoard),#{name},#{subject},
-      #{content},#{pwd},SYSDATE,0,#{filename},#{filesize}
-    )
-  </insert> -->
+	<!-- 값을 읽어오는 부분 : SELECT , 삭제 :DELETE, 수정: UPDATE, 추가: INSERT -->
+	<select id="boardListData" resultType="DataBoardVO" parameterType="hashmap">
+		SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,num
+		FROM(SELECT no,subject,name,regdate,hit,rownum as num
+		FROM(SELECT no,subject,name,regdate,hit
+		FROM databoard4 ORDER BY no DESC))
+		WHERE num BETWEEN #{start} AND #{end}	
+	</select>
+	<select id="boardTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/10.0) FROM databoard4
+	</select>
+	<!-- 내용보기 : 다운로드까지 -->
+	<!-- 중복 문장이 있는 경우 재사용하기 -->
+	<sql id="where-no">
+		WHERE no=#{no}
+	</sql>
+	<!-- 조회수 증가시키기  -->
+	<update id="hitIncrement" parameterType="int">
+		UPDATE databoard4 SET
+		hit=hit+1
+		<include refid="where-no"/>
+	</update>
+	<!-- 실제 데이터 읽기  -->
+	<select id="boardDetailData" resultType="DataBoardVO" parameterType="int">
+		SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,
+			hit,filename,filesize 
+		FROM databoard4
+		<include refid="where-no"/>	
+	</select>
+	<!-- 추가  -->
+	<!-- <insert id="boardInsert" parameterType="DataBoardVO">
+		INSERT INTO databoard4 VALUES(
+			(SELECT NVL(MAX(no)+1,1) FROM databoard4),#{name},#{subject},
+			#{content},#{pwd},SYSDATE,0,#{filename],#{filesize}
+		)
+	</insert> -->
   <insert id="boardInsert" parameterType="DataBoardVO">
     <!-- Sequence 
          SELECT NVL(MAX(no)+1,1) FROM databoard을 먼저 수행한 후에
@@ -115,9 +44,9 @@
          INSERT 문장에 추가
     -->
     <selectKey keyProperty="no" resultType="int" order="BEFORE">
-      SELECT NVL(MAX(no)+1,1) FROM databoard
+      SELECT NVL(MAX(no)+1,1) FROM databoard4
     </selectKey>
-    INSERT INTO databoard VALUES(
+    INSERT INTO databoard4 VALUES(
       #{no},
       #{name},
       #{subject},
@@ -129,77 +58,39 @@
       #{filesize}
     )
   </insert>
-  <!-- 
-        MyBatis => 실무에서도 사용 => DAO(X) => 프로젝트 
-        1. 태그명 
-           <sql> : 중복된 문장이 있는 경우에 저장한후 나중에 재사용
-           <select> : SELECT
-           <insert> : SELECT(자동 증가번호),INSERT => INSERT
-                      <selectKey>
-           <update> : UPDATE
-           <delete> : DELETE
-        2. 속성명 
-           id  ===> 구분자 (중복이 없다)
-           resultType => SQL문장을 실행후에 받는 변수 (여러개=> VO,Map,한개=>일반변수) 
-           parameterType => ?에 값을 설정할 경우에 사용 
-           ================
-           resultMap  ====> JOIN,SUBQUERY
-           parameterMap ==> PL/SQL (PROCEDURE) => 함수 호출 
-                            C언어 => 함수
-                                                    자바 => 메소드
-                                                    오라클 => 프로시저
-                                                    자바스크립트 => 함수
-                                                    코틀린 => 함수/메소드 
-                                                    
-                            클래스안에 함수가 지정 => 메소드
-                            클래스밖에서 지정 => 함수 
-           ================
-   -->
-  <!-- 수정하기 -->
-  <update id="boardUpdate" parameterType="DataBoardVO">
-    UPDATE databoard SET
-    name=#{name},
-    subject=#{subject},
-    content=#{content}
-    <include refid="where-no"/><!-- WHERE no=#{no} -->
-  </update>
-  <!-- 삭제하기 -->
-  <!-- 비밀번호 확인 -->
+	<!-- 수정  -->
+	<update id="boardUpdate" parameterType="DataBoardVO">
+		UPDATE databoard4 SET
+		name=#{name},
+		subject=#{subject},
+		content=#{content}
+		<include refid="where-no"/>
+	</update>
+	<!-- 삭제  -->
+	 <!-- 비밀번호 확인 -->
   <select id="boardGetPassword" resultType="String" parameterType="int">
-    SELECT pwd FROM databoard
+    SELECT pwd FROM databoard4
     <include refid="where-no"/>
   </select>
   <!-- 게시물이 삭제가 되면 업로드된 파일을 삭제 -->
   <select id="boardGetInfoData" resultType="DataBoardVO" parameterType="int">
-    SELECT filename,filesize FROM databoard
+    SELECT filename,filesize FROM databoard4
     <include refid="where-no"/>
   </select>
   <!-- 본인일 경우에는 게시물을 삭제 -->
   <delete id="boardDelete" parameterType="int">
-    DELETE FROM databoard
+    DELETE FROM databoard4
     <include refid="where-no"/>
   </delete>
-  <!-- 찾기 -->
-  <!-- 
-          ${fd} => 컬럼명,테이블명  (name LIKE , subject LIKE, content LIKE)
-          #{ss} => 일반 데이터 
-   -->
-  <select id="boardFindData" resultType="DataBoardVO" parameterType="hashmap">
-    SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit
-    FROM databoard 
-    WHERE ${fd} LIKE '%'||#{ss}||'%'
-  </select>
-  <select id="boardFindCount" resultType="int" parameterType="hashmap">
-    SELECT COUNT(*)
-    FROM databoard 
-    WHERE ${fd} LIKE '%'||#{ss}||'%'
-  </select>
+	<!-- 찾기  -->
+	<select id="boardFindData" resultType="DataBoardVO" parameterType="hashmap">
+		SELECT no,subject,name,TO_CHAR(regdate,'YYYY-MM-DD') as dbday, hit
+		FROM databoard4
+		WHERE ${fd} LIKE '%'||#{ss}||'%'
+	</select>
+	<select id="boardFindCount" resultType="int" parameterType="hashmap">
+		SELECT COUNT(*)
+		FROM databoard4
+		WHERE ${fd} LIKE '%'||#{ss}||'%'
+	</select>
 </mapper>
-
-
-
-
-
-
-
-
