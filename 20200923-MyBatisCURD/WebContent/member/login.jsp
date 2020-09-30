@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<form method=post action="../member/login_ok.jsp">
    <table class="table">
      <tr>
        <td class="text-right">ID</td>
@@ -22,9 +23,10 @@
      </tr>
      <tr>
        <td class="text-right" colspan="2">
-         <input type=button value="로그인" class="btn btn-sm btn-success">
+         <input type=submit value="로그인" class="btn btn-sm btn-success">
        </td>
      </tr>
    </table>
+   </form>
 </body>
 </html>

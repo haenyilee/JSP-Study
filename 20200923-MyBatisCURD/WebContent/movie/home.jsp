@@ -36,6 +36,19 @@
     }
     // 총페이지 읽기 
     int totalpage=MovieDAO.movieTotalPage();
+    
+    // 쿠키읽기
+    List<String> cList=new ArrayList<String>();
+   	Cookie[] cookies=request.getCookies();
+   	
+   	for(int i=0;i<cookies.length;i++)
+   	{
+   		if(cookies[i].getName().startsWith("m"))
+   		{
+   			cList.add(cookies[i].getValue());
+   		}
+   	}
+    
 %>
 <!DOCTYPE html>
 <html>
@@ -62,9 +75,9 @@
         for(MovieVO vo:list)
         {
      %>
-             <div class="col-md-4">
+             <div class="col-md-3">
 			    <div class="thumbnail">
-			      <a href="../main/main.jsp?mode=8&no=<%=vo.getNo()%>">
+			      <a href="../movie/cookie.jsp?&no=<%=vo.getNo()%>">
 			        <img src="<%=vo.getPoster() %>" alt="Lights" style="width:100%">
 			        <div class="caption">
 			          <p style="font-size:8pt"><%=vo.getTitle() %></p>
@@ -92,6 +105,32 @@
    <%
        }
    %>
+   <div class="row">
+   	<h3>최근 방문한 영화&nbsp;<a href="../movie/delete.jsp" class="btn btn-sm btn-primary">쿠키 삭제하기</a></h3>
+   	<%
+   		if(cList==null || cList.size()<1)
+   		{
+   	%>
+   			<font color=red><h1>방문한 기록이 없습니다.</h1></font>
+   	<%		
+   		}
+   		else
+   		{
+   			for(String s:cList)
+   			{
+   	%>
+   				<div class="col-md-2">
+				    <div class="thumbnail">
+				        <img src="<%=s %>" alt="Lights" style="width:100%">
+				      </a>
+				    </div>
+				</div>
+   	
+   	<%
+   			}
+   		}
+   	%>
+   </div>
 </body>
 </html>
 

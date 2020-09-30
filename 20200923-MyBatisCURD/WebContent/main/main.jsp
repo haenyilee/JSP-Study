@@ -85,6 +85,17 @@
           // 화면 변경 ==> Controller => java
           // include => 기존파일에 다른 파일의 내용을 붙여놓기 하는 것이다 
           // 덮어쓰기 
+          
+    String id=(String)session.getAttribute("id");
+   	String log_jsp="";
+   	if(id==null)
+   	{
+   		log_jsp="../member/login.jsp";
+   	}
+   	else{
+   		log_jsp="../member/logout.jsp";
+   	}
+          
 %>
 <!DOCTYPE html>
 <html>
@@ -102,7 +113,7 @@
   <div class="row">
     <div class="col-sm-3">
       <!-- 로그인 -->
-      <jsp:include page="login.jsp"></jsp:include>
+      <jsp:include page="<%=log_jsp %>"></jsp:include>
     </div>
     <div class="col-sm-9">
       <!-- 레시피 : 메뉴를 클릭시마다 변경 : 변수를 잡아서 => jsp파일명을 변경 -->
