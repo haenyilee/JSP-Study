@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.challenge-mapper">
+	<!-- 챌린지 목록 -->
+	<select id="challengeListData" resultType="challengeVO" parameterType="hashmap">
+		SELECT start_day,poster,title,id_leader,limit, num
+		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
+		FROM (SELECT start_day,poster,title,id_leader,limit
+		FROM challenge ORDER BY start_day DESC))
+		WHERE num BETWEEN #{start} AND #{end}	
+	</select>
+	
+	<!-- 챌린지 목록 전체 페이지  -->
+	<select id="challengeTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/12.0) FROM challenge
+	</select>
+	
+	<!-- 챌린지 cate별로 페이지 나눈 목록 -->
+	<select id="challengeListData" resultType="challengeVO" parameterType="hashmap">
+		SELECT start_day,poster,title,id_leader,limit, num
+		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
+		FROM (SELECT start_day,poster,title,id_leader,limit
+		FROM challenge ORDER BY start_day DESC))
+		WHERE cate=#{cate}
+	</select>
+
+<!-- 
+INSERT INTO challenge 
+VALUES(
+1,'food','2020-10-05','저탄고지 식단 도전','30','https://lh3.googleusercontent.com/proxy/TSs5eYZGwdhsBOurf1892oXEmS1W9QgG_aYG9pJlYD4Gz3eQKHCHF2hqFIeIyegqlUoPC_qtYwPFZE0rQ-dwSa7VA8ulZwd5OLMhZWo2Z3OnMo88n9syA1eUp0i4',
+'저탄고지 식단 함께 도전해요!','홍길동');
+ -->
+
+
+
+
+</mapper>
