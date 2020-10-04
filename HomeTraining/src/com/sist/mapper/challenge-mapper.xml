@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.mapper.challenge-mapper">
+	<!-- 새 도전 만들기 -->
+	<insert id="challengeInsert" parameterType="challengeVO">
+ 		INSERT INTO challenge VALUES(
+ 			challenge_no_seq.nextval,
+ 			#{start_day},
+ 			#{poster},
+ 			#{title},
+ 			#{limit},
+ 			#{content},
+ 			#{cate},
+ 			SYSDATE
+ 		)
+ 	</insert>
+
 	<!-- 챌린지 목록 -->
-	<select id="challengeListData" resultType="challengeVO" parameterType="hashmap">
+	<select id="challengeListData" resultType="ChallengeVO" parameterType="hashmap">
 		SELECT start_day,poster,title,id_leader,limit, num
 		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
 		FROM (SELECT start_day,poster,title,id_leader,limit
@@ -16,13 +30,27 @@
 	</select>
 	
 	<!-- 챌린지 cate별로 페이지 나눈 목록 -->
-	<select id="challengeListData" resultType="challengeVO" parameterType="hashmap">
+	<select id="challengeListData" resultType="ChallengeVO" parameterType="hashmap">
 		SELECT start_day,poster,title,id_leader,limit, num
 		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
 		FROM (SELECT start_day,poster,title,id_leader,limit
 		FROM challenge ORDER BY start_day DESC))
 		WHERE cate=#{cate}
 	</select>
+	
+	<!-- 도전 상세보기 -->
+	<select id="challengDetailData" resultType="ChallengeVO" parameterType="int">
+ 		SELECT no,name,subject,content,TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit
+ 		FROM challenge
+ 		WHERE challenge_no=#{challenge_no}
+ 	</select>
+ 	
+ 	<!-- 도전 비밀번호 확인하기? -->
+ 	<select id="challengGetPassword" resultType="String" parameterType="int">
+ 		SELECT pwd FROM challenge
+ 		WHERE challenge_no=#{challenge_no}
+ 	</select>
+
 
 <!-- 
 INSERT INTO challenge 
@@ -30,8 +58,5 @@ VALUES(
 1,'food','2020-10-05','저탄고지 식단 도전','30','https://lh3.googleusercontent.com/proxy/TSs5eYZGwdhsBOurf1892oXEmS1W9QgG_aYG9pJlYD4Gz3eQKHCHF2hqFIeIyegqlUoPC_qtYwPFZE0rQ-dwSa7VA8ulZwd5OLMhZWo2Z3OnMo88n9syA1eUp0i4',
 '저탄고지 식단 함께 도전해요!','홍길동');
  -->
-
-
-
 
 </mapper>
