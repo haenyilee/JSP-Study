@@ -11,17 +11,16 @@
  			#{limit},
  			#{content},
  			#{cate},
- 			SYSDATE
  		)
  	</insert>
 
 	<!-- 챌린지 목록 -->
 	<select id="challengeListData" resultType="ChallengeVO" parameterType="hashmap">
-		SELECT start_day,poster,title,id_leader,limit, num
+		SELECT start_day,poster,title,(SELECT FROM WHERE)id_leader,limit, num
 		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
 		FROM (SELECT start_day,poster,title,id_leader,limit
-		FROM challenge ORDER BY start_day DESC))
-		WHERE num BETWEEN #{start} AND #{end}	
+		FROM challenge WHERE cate=#{cate} ORDER BY start_day DESC))
+		WHERE num BETWEEN #{start} AND #{end}
 	</select>
 	
 	<!-- 챌린지 목록 전체 페이지  -->
@@ -30,7 +29,7 @@
 	</select>
 	
 	<!-- 챌린지 cate별로 페이지 나눈 목록 -->
-	<select id="challengeListData" resultType="ChallengeVO" parameterType="hashmap">
+	<select id="challengeListData" resultType="ChallengeVO" parameterType="String">
 		SELECT start_day,poster,title,id_leader,limit, num
 		FROM (SELECT start_day,poster,title,id_leader,limit,rownum as num
 		FROM (SELECT start_day,poster,title,id_leader,limit
@@ -50,6 +49,14 @@
  		SELECT pwd FROM challenge
  		WHERE challenge_no=#{challenge_no}
  	</select>
+ 	
+ 	<!-- 도전 참여하기 -->
+ 	<insert id="challengeParticipate" parameterType="challengeVO">
+ 		INSERT INTO challenge_participation VALUES(
+ 		#{challenge_no},
+ 		#{challenge_id}
+ 		);
+ 	</insert>
 
 
 <!-- 
