@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 클래스 등록 -->
+<beans>
+	<baen class="com.sist.model.MainModel"/>
+	<bean class="com.sist.model.MovieModel"/>
+</beans>
