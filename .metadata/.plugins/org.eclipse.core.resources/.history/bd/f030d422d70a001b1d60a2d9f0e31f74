@@ -1,0 +1,17 @@
+package com.sist.model;
+
+import javax.servlet.http.HttpServletRequest;
+
+public class ChallengeModel {
+	public void challengeListData(HttpServletRequest request)
+	{
+		String page = request.getParameter("page");
+		
+		if(page==null)
+			page=1;
+		
+		int curpage=0;
+		
+	}
+
+}

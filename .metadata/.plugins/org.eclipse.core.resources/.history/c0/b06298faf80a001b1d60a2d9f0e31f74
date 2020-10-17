@@ -1,0 +1,59 @@
+<%@page import="com.sist.dao.ChallengeDAO"%>
+<%@page import="java.io.File"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="com.sist.dao.ChallengeVO"%>
+<%@page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy"%>
+<%@page import="com.oreilly.servlet.MultipartRequest"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+     request.setCharacterEncoding("utf-8");// 한글 디코딩
+     String path="/Users/haeni/Documents/WebDev/WebDev1/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/challenge_test/";
+     String enctype="UTF-8"; //한글파일명을 사용 여부 
+     int size=1024*1024*100;//파일의 최대크기 
+     // 사용자가 보내준 데이터를 받는다 (request=>파일을 받을 수 없다 , 일반데이터만 받는다)
+     MultipartRequest mr=
+          new MultipartRequest(request,path,size,enctype,new DefaultFileRenamePolicy());
+     
+     String poster=mr.getParameter("poster");
+     String title=mr.getParameter("title"); // 업로드시에만 사용
+     String start_day=mr.getParameter("start_day");
+     String end_day=mr.getParameter("end_day");
+     String limit=mr.getParameter("limit");
+     String content=mr.getParameter("content");
+     
+     SimpleDateFormat temp= new SimpleDateFormat("yyyy-MM-dd");
+     Date start_day2=temp.parse(start_day);
+     Date end_day2=temp.parse(end_day);
+     
+     // 받은 데이터들을 DAO => DAO에서 오라클에 INSERT
+     ChallengeVO vo=new ChallengeVO();
+     vo.setTitle(title);
+     vo.setStart_day(start_day2);
+     vo.setEnd_day(end_day2);
+     vo.setLimit(Integer.parseInt(limit));
+     vo.setContent(content);
+     
+     // filename,filesize => 없는 경우 (파일을 올리지 않을 경우,파일 올릴 경우)
+     String filename=mr.getOriginalFileName("poster");
+     // 사용자가 보낸 파일명을 읽어 온다 
+     // <input type=file name=upload size=20 class="input-sm">
+     if(filename==null)//파일을 올리지 않을 경우
+     {
+    	 vo.setPoster("");
+     }
+     else//파일 올릴 경우
+     {
+    	 // 업로드된 파일의 정보를 얻어온다 (파일 크기를 확인) => 다운로드 (프로그래바)
+    	 vo.setPoster(filename);
+     }
+     
+     // DAO를 호출한 다음에 INSERT요청 => 저장하는 SQL (databoard-mapper.xml)
+     ChallengeDAO.boardInsert(vo); // 추가 
+     /*
+         사용자 요청 ==> databoard-mapper.xml있는 SQL문장을 읽어 온다 (DAO => 읽어온 SQL문장을 실행 => JSP에 실행 결과출력 )
+       insert.jsp      SQL           DAO => 실행 boardInsert()       insert_ok.jsp 호출 처리
+     */
+     response.sendRedirect("../challenge.jsp");// list.jsp로 이동을 한다 
+ %>

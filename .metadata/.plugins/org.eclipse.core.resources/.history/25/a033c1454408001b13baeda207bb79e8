@@ -1,0 +1,11 @@
+package com.sist.dao;
+
+public class ChefVO {
+	private String poster;
+	private String chef;
+	private String mem_con1;
+	private String mem_con3;
+	private String mem_con7;
+	private String mem_con2;
+
+}

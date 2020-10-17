@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.dao.recipe-mapper">
+	<!-- 레시피 페이지 나눠서 처리 : 인라인뷰 -->
+	<select id="recipeListData" resultType="RecipeVO" parameterType="hashmap">
+    SELECT no,title,chef,poster,num
+    FROM (SELECT no,title,chef,poster,rownum as num 
+    FROM (SELECT no,title,chef,poster 
+    FROM recipe ORDER BY no ASC))
+    WHERE num BETWEEN #{start} AND #{end}
+  	</select>
+	<select id="recipeTotalPage" resultType="int">
+    SELECT CEIL(COUNT(*)/20.0) FROM recipe
+  	</select>
+	<!-- 쉐프 목록 -->
+	<select id="chefListData" resultType="ChefVO" parameterType="hashmap">
+		SELECT chef,poster,mem_cont1,mem_cont2,mem_cont3,mem_cont7,num
+		FROM (SELECT chef,poster,mem_cont1,mem_cont2,mem_cont3,mem_cont7, rownum as num
+		FROM (SELECT chef,poster,mem_cont1,mem_cont2,mem_cont3,mem_cont7
+		FROM chef))
+		WHERE num BETWEEN #{start} AND #{end}	
+	</select>
+	<!-- 쉐프 총페이지 -->
+	<select id="chefTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/50.0) FROM chef
+	</select>
+	<!-- 쉐프의 레시피 데이터 -->
+	<select id="chefRecipeData" resultType="RecipeVO" parameterType="hashmap">
+		SELECT no,title,chef,poster,num
+    	FROM (SELECT no,title,chef,poster,rownum as num
+    	FROM (SELECT no,title,chef,poster 
+    	FROM recipe WHERE chef=#{chef}
+    	ORDER BY no ASC))
+    	WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	<select id="chefRecipeTotalPage" resultType="int" parameterType="string">
+    SELECT CEIL(COUNT(*)/20.0) FROM recipe
+    WHERE chef=#{chef}
+  	</select>
+  	
+  	<!-- 쉐프별 레시피 갯수-->
+  	<select id="chefRecipeCount" resultType="ChefVO">
+  		SELECT chef,mem_cont1,rownum
+  		FROM chef
+  		WHERE rownum&lt;=10;
+  	</select>
+</mapper>

@@ -1,0 +1,47 @@
+package com.sist.dao;
+
+public class ChefVO {
+	private String poster;
+	private String chef;
+	private String mem_con1;
+	private String mem_con3;
+	private String mem_con7;
+	private String mem_con2;
+	public String getPoster() {
+		return poster;
+	}
+	public void setPoster(String poster) {
+		this.poster = poster;
+	}
+	public String getChef() {
+		return chef;
+	}
+	public void setChef(String chef) {
+		this.chef = chef;
+	}
+	public String getMem_con1() {
+		return mem_con1;
+	}
+	public void setMem_con1(String mem_con1) {
+		this.mem_con1 = mem_con1;
+	}
+	public String getMem_con3() {
+		return mem_con3;
+	}
+	public void setMem_con3(String mem_con3) {
+		this.mem_con3 = mem_con3;
+	}
+	public String getMem_con7() {
+		return mem_con7;
+	}
+	public void setMem_con7(String mem_con7) {
+		this.mem_con7 = mem_con7;
+	}
+	public String getMem_con2() {
+		return mem_con2;
+	}
+	public void setMem_con2(String mem_con2) {
+		this.mem_con2 = mem_con2;
+	}
+
+}
