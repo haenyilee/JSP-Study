@@ -1,7 +1,0 @@
-package com.sist.model;
-import javax.servlet.http.HttpServletRequest;
-
-public class ChallengeModel {
-	public void challengeListData(httpservlet)
-
-}

@@ -10,7 +10,7 @@
 	List<Integer> list2=new ArrayList<Integer>();
 	list2.add(30);
 	list2.add(28);
-	list2.add(36);
+	list2.add(3);
 %>
 <c:set var="names" value="<%=list %>"/>
 <c:set var="ages" value="<%=list2 %>"/>

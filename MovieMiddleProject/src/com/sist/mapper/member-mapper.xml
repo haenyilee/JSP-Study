@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.member-mapper">
+  <select id="memberIdcheck" resultType="int" parameterType="string">
+    SELECT COUNT(*) FROM member
+    WHERE id=#{id}
+  </select>
+  <!-- 
+        ID       NOT NULL VARCHAR2(20)   
+		PWD      NOT NULL VARCHAR2(10)   
+		NAME     NOT NULL VARCHAR2(34)   
+		EMAIL             VARCHAR2(1000) 
+		BIRTHDAY NOT NULL VARCHAR2(20)   
+		POST     NOT NULL VARCHAR2(10)   
+		ADDR1    NOT NULL VARCHAR2(200)  
+		ADDR2             VARCHAR2(100)  
+		TEL               VARCHAR2(20)   
+		CONTENT  NOT NULL CLOB           
+		ADMIN             CHAR(1)
+   -->
+   <insert id="memberInsert" parameterType="com.sist.vo.MemberVO">
+     INSERT INTO member VALUES(
+       #{id},
+       #{pwd},
+       #{name},
+       #{email},
+       #{birthday},
+       #{post},
+       #{addr1},
+       #{addr2},
+       #{tel},
+       #{content},
+       'n'
+     )
+   </insert>
+   <select id="memberLogin" resultType="com.sist.vo.MemberVO" parameterType="String">
+     SELECT id,name,pwd,admin
+     FROM member
+     WHERE id=#{id}
+   </select>
+</mapper>
+
+
+
+

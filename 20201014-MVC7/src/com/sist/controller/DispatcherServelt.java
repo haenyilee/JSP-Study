@@ -13,15 +13,13 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /*
- *  Annotation »ç¿ë ¸ñÀû
- *  1. Method¸¦ ¾Ë¾Æ¼­ Ã£¾Æ°¥ ¼ö ÀÖ´Ù.
- *  2. Spring ¿¡¼­  ¸Þ¼Òµå ¸í¿¡¼­  ÀÚÀ¯·Ó´Ù
+ *  Annotation ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ *  1. Methodï¿½ï¿½ ï¿½Ë¾Æ¼ï¿½ Ã£ï¿½Æ°ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
+ *  2. Spring ï¿½ï¿½ï¿½ï¿½  ï¿½Þ¼Òµï¿½ ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½
  */
 import java.util.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
-
-import com.sun.xml.internal.ws.api.Component;
 
 
 
@@ -29,22 +27,22 @@ import com.sun.xml.internal.ws.api.Component;
 public class DispatcherServelt extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	// clsList : Model Å¬·¡½º¸¦ ÀúÀåÇÏ´Â ArrayList
+	// clsList : Model Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ArrayList
 	List<String> clsList= new ArrayList<String>();
 	public void init(ServletConfig config) throws ServletException {
 		String xmlPath=config.getInitParameter("contextConfigLocation");
 		
-		// path : ÇÁ·ÎÁ§Æ® °æ·Î (¿¹: C:\\SpringStudy\\20201014-MVC_Final\\src)
+		// path : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ (ï¿½ï¿½: C:\\SpringStudy\\20201014-MVC_Final\\src)
 		String path="path";
 		System.out.println("xml-path:"+xmlPath);
 		try {
 			DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
 			DocumentBuilder db=dbf.newDocumentBuilder();
 			Document doc=db.parse(new File(xmlPath));
-			// ·çÆ®ÅÂ±× : application-context¿¡ component-scanÅÂ±× °ª ÀÐ±â
+			// ï¿½ï¿½Æ®ï¿½Â±ï¿½ : application-contextï¿½ï¿½ component-scanï¿½Â±ï¿½ ï¿½ï¿½ ï¿½Ð±ï¿½
 			Element root=doc.getDocumentElement();
 			
-			// È¸¿ø°¡ÀÔ, ·Î±×ÀÎ(¼¼¼Ç) ,»ó¼¼,ÄíÅ°,ÂòÇÏ±â,¿¹¸ÅÃ³¸® ±â´É
+			// È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Î±ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½) ,ï¿½ï¿½,ï¿½ï¿½Å°,ï¿½ï¿½ï¿½Ï±ï¿½,ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½
 			NodeList list=root.getElementsByTagName("component-scan");
 			
 			ComponentScan com=new ComponentScan();
@@ -67,15 +65,15 @@ public class DispatcherServelt extends HttpServlet {
 			System.out.println(s);
 		}
 	}
-    // ¿äÃ» °á°ú°ª ==> ÇØ´ç JSP·Î Àü¼Û 
+    // ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½ï¿½ ==> ï¿½Ø´ï¿½ JSPï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String cmd=request.getRequestURI();
 		cmd=cmd.substring(request.getContextPath().length()+1);
 		
 		try
 		{
-			// ¸Þ¸ð¸® ÇÒ´ç  (ModelÅ¬·¡½º ¸Þ¸ð¸® ÇÒ´ç) => clsList
-			// new MainModel() ==> Controller (ÇÑ°³) ==> °øÀ¯ (¼öÁ¤À» ÇÏ¸é => À¯Áöº¸¼ö°¡ ¾î·Æ´Ù) => °íÁ¤
+			// ï¿½Þ¸ï¿½ ï¿½Ò´ï¿½  (ModelÅ¬ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½Ò´ï¿½) => clsList
+			// new MainModel() ==> Controller (ï¿½Ñ°ï¿½) ==> ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¸ï¿½ => ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ´ï¿½) => ï¿½ï¿½ï¿½ï¿½
 			// XML => C/Java/C#/JavaScript
 			for(String cls:clsList)
 			{
@@ -91,9 +89,9 @@ public class DispatcherServelt extends HttpServlet {
 				 *    Object obj=new A();
 				 *    obj=new B();
 				 */
-				// ¸Þ¼Òµå¸¦ Ã£¾Æ¼­ È£Ãâ (invoke())
+				// ï¿½Þ¼Òµå¸¦ Ã£ï¿½Æ¼ï¿½ È£ï¿½ï¿½ (invoke())
 				Method[] methods=clsName.getDeclaredMethods();
-				// Å¬·¡½º¿¡ ¼±¾ðµÈ ¸ðµç ¸Þ¼Òµå¸¦ °¡Áö°í ¿Â´Ù 
+				// Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Þ¼Òµå¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Â´ï¿½ 
 				for(Method m:methods)
 				{
 					RequestMapping rm=m.getAnnotation(RequestMapping.class);
@@ -109,11 +107,11 @@ public class DispatcherServelt extends HttpServlet {
 						}
 						else
 						{
-							// requestÀü¼Û 
+							// requestï¿½ï¿½ï¿½ï¿½ 
 							RequestDispatcher rd=request.getRequestDispatcher(jsp);
 							rd.forward(request, response);
 						}
-						return;// Á¾·á (response=>»ç¿ëÀÚ¿¡°Ô µ¥ÀÌÅÍ Àü¼Û½Ã ÇÑ¹ø¸¸ ¼öÇà)
+						return;// ï¿½ï¿½ï¿½ï¿½ (response=>ï¿½ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 						
 					}
 				}
