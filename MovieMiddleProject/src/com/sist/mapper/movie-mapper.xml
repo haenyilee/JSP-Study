@@ -1,30 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sist.mapper.movie-mapper">
-  <!-- 
-         resultType => 데이터베이스의 컬럼명과 VO에 있는 변수명이 일치 = default
-         resultMap  => 데이터베이스의 컬럼명과 VO에 있는 변수명이 불일치 
-         TO_CHAR(regdate,'YYYY-MM-DD') as dbday
-                                         ======
-                                         setDbday()
-                                         
-         = private String irum;
-           SELECT name as irum
-         = name
-         while(rs.next())
-         {
-             MovieVO vo=new MovieVO();
-             <result property="name" column="name">
-                     ===============
-                      setName(rs.getString(""))
-             vo.setXxx()
-         }
-   -->
-  <!-- 
-      카테고리별로 페이지 나누기
-   =======
-     1~5
-   -->
+
+
+<!-- ****영화**** -->
+<!-- ///////////////////////// 카테고리별 영화 목록 /////////////////////////////////-->
   <select id="movieListData" resultType="MovieVO" parameterType="hashmap">
     SELECT no,poster,title,num
     FROM (SELECT no,poster,title,rownum as num
@@ -32,30 +12,14 @@
     FROM daum_movie WHERE cateno=#{cateno} ORDER BY score DESC))
     WHERE num BETWEEN #{start} AND #{end}
   </select>
+
+<!-- ///////////////////////// 영화 카테고리별 전체 페이지수 /////////////////////////-->  
   <select id="movieTotalPage" resultType="int" parameterType="int">
     SELECT CEIL(COUNT(*)/12.0) FROM daum_movie
     WHERE cateno=#{cateno}
   </select>
-  <!-- 영화 뉴스 -->
-  <select id="movieNewsData" resultType="com.sist.vo.NewsVO" parameterType="hashmap">
-    <!-- Class.forName("com.sist.vo.NewsVO") 
-        private String title;
-	    private String poster;
-	    private String link;
-	    private String content;
-	    private String author;
-    -->
-    SELECT title,poster,link,content,author,num
-    FROM (SELECT title,poster,link,content,author,rownum as num 
-    FROM (SELECT title,poster,link,content,author 
-    FROM daum_news))
-    WHERE num BETWEEN #{start} AND #{end}
-  </select>
   
-  <select id="newsTotalPage" resultType="int">
-    SELECT CEIL(COUNT(*)/20.0) FROM daum_news
-  </select>
-  
+<!-- ///////////////////////// 영화 전체 리스트 //////////////////////////////////-->    
   <select id="movieTotalData" resultType="MovieVO" parameterType="hashmap">
     SELECT no,poster,title,num
     FROM (SELECT no,poster,title,rownum as num
@@ -63,27 +27,116 @@
     FROM daum_movie ORDER BY score DESC))
     WHERE num BETWEEN #{start} AND #{end}
   </select>
+  
+<!-- ///////////////////////// 영화 전체 페이지 수 /////////////////////////////////-->    
   <select id="movieTotalPage2" resultType="int" parameterType="int">
     SELECT CEIL(COUNT(*)/12.0) FROM daum_movie
   </select>
   
-  <!-- 상세보기 
-       hit를 증가 
-       cookie 
-   -->
+<!-- ///////////////////////// 영화 조회수 증가 /////////////////////////////////-->  
   <update id="hitIncrement" parameterType="int">
     UPDATE daum_movie SET
     hit=hit+1
     WHERE no=#{no}
   </update>
+  
+<!-- ///////////////////////// 영화 상세 보기 /////////////////////////////////-->    
   <select id="movieDetailData" resultType="MovieVO" parameterType="int">
     SELECT * FROM daum_movie
     WHERE no=#{no}
   </select>
+
+
+<!-- ****영화 뉴스**** -->
+<!-- ///////////////////////// 영화뉴스 리스트 /////////////////////////////////-->  
+  <select id="movieNewsData" resultType="com.sist.vo.NewsVO" parameterType="hashmap">
+    SELECT title,poster,link,content,author,num
+    FROM (SELECT title,poster,link,content,author,rownum as num 
+    FROM (SELECT title,poster,link,content,author 
+    FROM daum_news))
+    WHERE num BETWEEN #{start} AND #{end}
+  </select>
+
+<!-- ///////////////////////// 영화뉴스 전체 페이지 수 ///////////////////////////-->    
+  <select id="newsTotalPage" resultType="int">
+    SELECT CEIL(COUNT(*)/20.0) FROM daum_news
+  </select>
   
+
+
+<!-- ****영화 예매**** -->
+<!-- ///////////////////////// 영화 예매 목록 /////////////////////////////////-->    
   <select id="movieReserveData" resultType="MovieVO">
     SELECT no,title,poster,theater_no 
     FROM movie_info
+  </select>
+
+<!-- ///////////////////////// 영화의 영화관 번호 찾기????  /////////////////////-->    
+  <select id="movieTheaterNo" resultType="String" parameterType="int">
+  	SELECT theater_no FROM movie_info
+  	WHERE no=#{no}
+  </select>
+
+<!-- ///////////////////////// 영화관 정보  찾기 /////////////////////////////////-->    
+  <select id="theaterListData" resultType="com.sist.vo.TheaterVO" parameterType="int">
+  	SELECT * FROM theater_info
+  	WHERE tno=#{tno}
+  </select>
+
+<!-- ///////////////////////// 영화관 상영일  찾기 /////////////////////////////////-->      
+  <select id="theaterReserveData" resultType="String" parameterType="int">
+  	SELECT rday FROM theater_info
+    WHERE tno=#{tno}
+  </select>
+
+<!-- ///////////////////////// 영화관 상영시간  찾기??????? ////////////////////////-->     
+  <select id="dayTimeData" resultType="String" parameterType="int">
+  	SELECT rtime FROM date_info
+  	WHERE rday=#{rday}
+  </select>
+
+<!-- ///////////////////////// 영화관 상영 시간대 /////////////////////////////////-->       
+  <select id="timeData">
+  	SELECT time FROM time_info
+  	WHERE tno=#{tno}
+  </select>
+
+<!-- ///////////////////////// 영화 예매자 정보 추가/////////////////////////////////-->  
+  <insert id="reserveInsert" parameterType="com.sist.vo.ReserveVO">
+  	<selectKey keyProperty="no" resultType="int" order="BEFORE">
+ 		SELECT NVL(MAX(no)+1,1) as no FROM reserve		
+  	</selectKey>
+  	INSERT INTO reserve VALUES(
+  		#{no},
+  		#{id},
+  		#{mno},
+  	)
+  </insert>
+
+<!-- ****예매 관리**** -->
+  <!-- ReserveVO mvo 변수 등록 --> 
+  <resultMap type="com.sist.vo.ReserveVO" id="reserveList">
+  	<result property="no" column="no"/>
+  	<result property="id" column="id"/>
+  	<result property="theater" column="theater"/>
+  	<result property="time" column="time"/>
+  	<result property="inwon" column="inwon"/>
+  	<result property="price" column="price"/>
+  	<result property="isreserve" column="isreserve"/>
+  	<result property="mvo.title" column="title"/>
+  	<result property="mvo.poster" column="poster"/>
+  </resultMap>
+<!-- ///////////////////////// 마이페이지 조회 /////////////////////////////////-->  
+  <select id="mypageReserveListData" resultMap="reserveList" parameterType="string">
+	SELECT reservo.no,title,poster,theater,time,inwon,price,isreserve
+	FROM reserve,movie_info
+	WHERE mno=movie_info.no AND id=#{id}
+  </select>
+<!-- ///////////////////////// 예약 관리자 페이지 조회 ///////////////////////////-->  
+  <select id="adminpageReserveListData" resultMap="reserveList">
+	SELECT no,id,title,poster,theater,time,inwon,price,isreserve
+	FROM reserve,movie_info
+	WHERE mno=no
   </select>
 </mapper>
 

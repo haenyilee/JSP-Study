@@ -99,6 +99,42 @@ public class MovieDAO {
 	   }
 	   return result;
    }
+   public void theater_rday(int tno, String rday)
+   {
+	   try
+	   {
+		  getConnection();
+		  String sql="UPDATE theater_info SET "
+		  		+ "rday=? "
+		  		+ "WHERE tno=?";
+		  ps=conn.prepareStatement(sql);
+		  ps.setString(1, rday);
+		  ps.setInt(2, tno);
+		  ps.executeUpdate(sql);
+	   }
+	   catch (Exception e) {
+		System.out.println(e.getMessage());
+	   }
+	   finally {
+		   disConnection();
+	   }	
+   }
+   
+   public void date_time(int month,String time)
+   {
+	   try {
+		getConnection();
+		String sql="INSERT INTO date_info VALUES(?,?)";
+		ps=conn.prepareStatement(sql);
+		ps.setInt(1, month);
+		ps.setString(2, time);
+		ps.executeUpdate();
+	} catch (Exception e) {
+		e.printStackTrace();
+	} finally {
+		disConnection();
+	}
+   }
 }
 
 

@@ -1,25 +1,69 @@
 package com.sist.model;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.sist.controller.RequestMapping;
 import com.sist.dao.MovieDAO;
 import com.sist.vo.MovieVO;
+import com.sist.vo.ReserveVO;
+import com.sist.vo.TheaterVO;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 public class ReserveModel {
+
+///////////////////////// 예매하기 페이지로 이동 /////////////////////////////////  
   @RequestMapping("reserve/reserve.do")
   public String reserve_main(HttpServletRequest request)
   {
 	  request.setAttribute("main_jsp", "../reserve/reserve.jsp");
 	  return "../main/main.jsp";
   }
+
+	  
+///////////////////////// 예매 가능한 영화 목록 /////////////////////////////////  
+	@RequestMapping("reserve/movie.do")
+	public String reserve_movie(HttpServletRequest request)
+	{
+	List<MovieVO> list=MovieDAO.movieReserveData();
+	request.setAttribute("list", list);
+	return "../reserve/movie.jsp"; 
+	// ajax로 특정 부분만 변화해야 하기 때문에 (단독실행) include하면 안됨 , main.jsp로 이동하면 안됨
+	}
+	
+///////////////////////// 영화관 목록 /////////////////////////////////  
+	@RequestMapping("reserve/theater.do")
+	public String reserve_theater(HttpServletRequest request)
+	{
+	// 선택한 영화번호 받기
+	String no=request.getParameter("no");
+	// DB연동
+	String tdata= MovieDAO.movieTheaterNo(Integer.parseInt(no));
+	
+	StringTokenizer st=new StringTokenizer(tdata,",");
+	List<TheaterVO> list = new ArrayList<TheaterVO>();
+	
+	while(st.hasMoreTokens())
+	{
+	TheaterVO vo=MovieDAO.theaterListData(Integer.parseInt(st.nextToken()));
+	list.add(vo);
+	}
+	request.setAttribute("list", list);
+	return "../reserve/theater.jsp";
+	}
+  
+  
+///////////////////////// 예매 달력 /////////////////////////////////    
   @RequestMapping("reserve/date.do")
   public String reserve_date(HttpServletRequest request)
   {
 	  String strYear=request.getParameter("year");
 	  String strMonth=request.getParameter("month");
+	  String tno=request.getParameter("tno");
+	  
+	  
+	  
 	  Date date=null;
 		try {
 			date = new Date();
@@ -44,6 +88,7 @@ public class ReserveModel {
 		  strMonth=st.nextToken();
 	  }
 	  
+	  // 처음 띄워줄 오늘 날짜
 	  int day=Integer.parseInt(st.nextToken());// 화면 
 	  int year=Integer.parseInt(strYear);
 	  int month=Integer.parseInt(strMonth);
@@ -58,7 +103,25 @@ public class ReserveModel {
 	  int lastday=cal.getActualMaximum(Calendar.DATE);
 	  String[] strWeek={"일","월","화","수","목","금","토"};
 	  System.out.println("요일:"+strWeek[week-1]);
-	  System.out.println("마지막날:"+lastday);
+	  // System.out.println("마지막날:"+lastday);
+	  
+	  // db에서 예약날짜 읽어오기
+	  String rday=MovieDAO.theaterReserveData(Integer.parseInt(tno));
+	  int [] days=new int[31];
+	  StringTokenizer st2=new StringTokenizer(rday,",");
+	  
+	  while(st2.hasMoreTokens())
+	  {
+		  String d=st2.nextToken();
+		  days[Integer.parseInt(d)]=Integer.parseInt(d);
+	  }
+	  
+	  for(int k:days)
+	  {
+		  System.out.println("k="+k);
+	  }
+	  
+	  request.setAttribute("rdays", days);
 	  
 	  // jsp로 전송 
 	  request.setAttribute("year", year);
@@ -70,19 +133,88 @@ public class ReserveModel {
 	  // 1일자의 요일 
 	  return "../reserve/date.jsp";
   }
-  @RequestMapping("reserve/movie.do")
-  public String reserve_movie(HttpServletRequest request)
+
+  
+///////////////////////// 영화 예매 시간 /////////////////////////////////  
+  @RequestMapping("reserve/time.do")
+  public String reserve_time(HttpServletRequest request)
   {
-	    List<MovieVO> list=MovieDAO.movieReserveData();
-	    request.setAttribute("list", list);
-	    return "../reserve/movie.jsp";
+	  String day=request.getParameter("day");
+	  // 데이터베이스 = DB연동
+	  String rdays=MovieDAO.dayTimeData(Integer.parseInt(day));
+	  // 1(08:00),2(09:00),5(...),6,7,8
+	  StringTokenizer st=new StringTokenizer(rdays,",");
+	  List<String> list=new ArrayList<String>();
+	  while(st.hasMoreTokens())
+	  {
+		  String s=st.nextToken();
+		  String time=MovieDAO.timeData(Integer.parseInt(s));
+		  list.add(time);
+	  }
+	  request.setAttribute("list", list);
+	  return "../reserve/time.jsp";
   }
-  // 극장 
-  // 시간
-  // 인원
-  // 예매 
-  // 마이페이지
-  // 어드민 페이지
+  
+///////////////////////// 영화 예매 인원 버튼 /////////////////////////////////  
+  @RequestMapping("reserve/inwon.do")
+  public String reserve_inwon(HttpServletRequest request)
+  {
+	  return "../reserve/inwon.jsp";
+  }
+  
+///////////////////////// 예매 정보 전송 /////////////////////////////////  
+  @RequestMapping("reserve/reserve_ok.do")
+  public String reserve_ok(HttpServletRequest request)
+  {
+	 
+	  try
+	  {
+		  request.setCharacterEncoding("UTF-8");
+	  }catch(Exception ex) {}
+	  
+	  String mno=request.getParameter("mno");
+	  String tname=request.getParameter("tname");
+	  String inwon=request.getParameter("inwon");
+	  String day=request.getParameter("day");
+	  String price=request.getParameter("price");
+	  String time=request.getParameter("time");
+	  
+	  HttpSession session=request.getSession();
+	  String id=(String)session.getAttribute("id");
+	   
+	  ReserveVO vo=new ReserveVO();
+	  vo.setId(id);
+	  vo.setMno(Integer.parseInt(mno));
+	  vo.setInwon(inwon);
+	  vo.setPrice(price);
+	  vo.setTheater(tname);
+	  vo.setTime(day+"("+time+")");
+	  // insert
+	  MovieDAO.reserveInsert(vo);
+	  return "../reserve/reserve_ok.jsp";
+  }
+  
+  
+///////////////////////// 영화 예매 마이페이지 /////////////////////////////////  
+  @RequestMapping("reserve/mypage.do")
+  public String reserve_mypage(HttpServletRequest request)
+  {
+	  HttpSession session=request.getSession();
+	  String id=(String) session.getAttribute("id");
+	  List<ReserveVO> list=MovieDAO.mypageReserveListData(id);
+	  request.setAttribute("list", list);
+	  request.setAttribute("main_jsp", "../reserve/mypage.jsp");
+	  return "../main/main.jsp";
+  }
+///////////////////////// 예매 관리 어드민 /////////////////////////////////  
+  @RequestMapping("reserve/adminpage.do")
+  public String reserve_adminpage(HttpServletRequest request)
+  {
+	  List<ReserveVO> list=MovieDAO.adminpageReserveListData();
+	  request.setAttribute("list", list);
+	  request.setAttribute("main_jsp", "../reserve/adminpage.jsp");
+	  return "../main/main.jsp";
+  }
 }
 
 

@@ -8,23 +8,26 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript">
 $(function(){
-	// input에 값을 첨부
 	$('#name').val("홍길동");
-	// click , change:select,hover
 	$('#btn').click(function(){
+		// 입력한 값 받아오기 : val()
 		let name=$('#name').val();
-		//$('div').text(name);// <div>값을 출력</div>
-		// $('div').text(); //<div>값을 읽는다</div>
+		
+		// div사이 값을 읽기
+		// $('div').text();
+		
+		// div태그 사이에 값을 출력하기 : text()
+		// $('div').text(name);
+		
+		// 입력 값 누적시키기
 		$('div').append(name+"<br>");
 	})
 });
 </script>
 </head>
 <body>
-  이름:<input type=text id="name" size=15 value="">
-  <input type=button value="실행" id="btn"><br>
-  <div>
-   
-  </div>
+	이름:<input type=text id="name" size="15">
+	<input type=button value="실행" id="btn"><br>
+	<div></div>
 </body>
 </html>

@@ -9,13 +9,20 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript">
 $(function(){
+	
+	
 	$('.movie').click(function(){
 		let no=$(this).attr("data-value");
 		//alert("no:"+no);
-		let poster=$(this).attr("data-poster");
+		let poster=$(this).attr("data-poster"); // this는 사용자가 클릭한 값임
 		let title=$(this).attr("data-title");
 		$('#movie_poster').attr("src",poster);
 		$('#movie_title').text(title);
+		
+		//사용자가 클릭한 값
+		$('#mno').val(no);
+		
+		//theater.do?no=1
 		$.ajax({
 			type:'post',
 			url:'../reserve/theater.do',

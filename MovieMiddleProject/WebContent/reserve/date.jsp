@@ -13,6 +13,37 @@
    width:350pt;
 }
 </style> -->
+
+<!-- 날짜 클릭하기 -->
+<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.rdays_ok').hover(function name() {
+		$(this).css("cursor","pointer");
+	}, function() {
+		$(this).css("cursor","")		
+	})
+})
+
+
+// 예약일 클릭했을 때 처리하는 문장
+ $('.rdays_ok').click(function(){
+	 let year=$(this).attr("data-year");
+	 let month=$(this).attr("data-month");
+	 let day=$(this).text();
+	 let rday=year+"년도"+month+"월 "+day+"일";
+	 $('#movie_reserve').text(rday);
+	 $('#day').val(rday);
+ })
+ 
+ // 시간 출력하기
+ 
+
+</script>
+
+
+
+
 </head>
 <body>
  
@@ -51,6 +82,10 @@
             <th class="text-center"><font color="${color }">${str }</font></th>
           </c:forEach>
         </tr>
+        
+        <!-- 선택된 날짜에 색깔 표기하기  : link O-->
+        
+        
         <c:set var="week" value="${week }"/>
         <c:forEach var="i" begin="1" end="${lastday }">
            <c:choose>
@@ -78,6 +113,23 @@
              <c:set var="bg" value="text-center"/>
            </c:if>
            
+           <td class="${bg }"><font color="${color }">${i }</font></td>
+           <c:set var="week" value="${week+1 }"/>
+           <c:if test="${week>6 }">
+             <c:set var="week" value="0"/>
+             </tr>
+             <tr style="height:40px">
+           </c:if>
+           
+            <c:if test="${i==day }">
+             <c:set var="bg" value="text-center danger"/>
+           </c:if>
+           <c:if test="${i!=day }">
+             <c:set var="bg" value="text-center"/>
+           </c:if>
+           
+            <!-- 선택된 날짜 오른쪽 화면에 표기하기 : 링크 X -->
+        
            <td class="${bg }"><font color="${color }">${i }</font></td>
            <c:set var="week" value="${week+1 }"/>
            <c:if test="${week>6 }">
