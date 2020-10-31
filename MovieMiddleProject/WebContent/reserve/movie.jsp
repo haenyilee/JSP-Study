@@ -9,8 +9,15 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript">
 $(function(){
+	// 영화 검색 기능
+	$('#keyword').keyup(function(){
+		let k=$('#keyword').val();
+		$('#movie-table > tr').hide();
+		let temp=$('#movie-table > tbody > tr > td:nth-child(2n+2):contains("'+k+'")');
+		$(temp).parent().show();
+	})
 	
-	
+	// 영화 목록 중에서 영화 선택
 	$('.movie').click(function(){
 		let no=$(this).attr("data-value");
 		//alert("no:"+no);
@@ -37,7 +44,17 @@ $(function(){
 </script>
 </head>
 <body>
-   <table class="table striped">
+	<!-- ----------------영화 검색 start-------------------- -->
+   <table class="table">
+   	<tr>
+   		<td>
+   		<input type=text id="keyword" size=15 placeholder="검색">
+   		</td>
+   	</tr>
+   </table>
+   <!-- ----------------영화 검색 end-------------------- -->
+   <table class="table table-striped" id="movie-table">
+   	<tbody>
      <c:forEach var="vo" items="${list }">
        <tr class="movie" data-value="${vo.no }"
            data-poster="${vo.poster }" data-title="${vo.title }">
@@ -45,6 +62,7 @@ $(function(){
          <td style="font-size:8pt">${vo.title }</td>
        </tr>
      </c:forEach>
+    </tbody>
    </table>
 </body>
 </html>

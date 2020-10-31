@@ -18,7 +18,7 @@
     <c:forEach var="vo" items="${list }">
       <div class="col-md-4">
 	    <div class="thumbnail">
-	      <a href="#">
+	      <a href="../movie/detail_before.do?no=${vo.no }">
 	        <img src="${vo.poster }" alt="Lights" style="width:100%">
 	        <div class="caption">
 	          <p>${vo.title }</p>
@@ -48,6 +48,21 @@
 		</ul>
     </div>
   </div>
+ <!----------------------------최근 본 영화------------------------------->
+   <c:forEach var="vo" items="${cList }" varStatus="s">
+    <c:if test=${s.index<6 }">
+      <div class="col-md-2">
+	    <div class="thumbnail">
+	      <a href="#">
+	        <img src="${vo.poster }" alt="Lights" style="width:100%">
+	        <div class="caption">
+	          <p>${vo.title }</p>
+	        </div>
+	      </a>
+       </div>
+     </div>
+    </c:if>
+   </c:forEach>
 </body>
 </html>
 

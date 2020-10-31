@@ -136,7 +136,8 @@ public class MovieDAO {
 	   session.insert("reserveInsert",vo);
 	   session.close();
    }
-  
+
+ // **예약 내역 조회**
 ///////////////////////// 마이페이지 조회 /////////////////////////////////
    public static List<ReserveVO> mypageReserveListData(String id)
    {
@@ -155,7 +156,55 @@ public class MovieDAO {
 	   return list;
    }
    
+///////////////////////// 승인 대기 > 승인 완료로 변경  /////////////////////////////////
+   public static void reserveOk(int no)
+   {
+	   SqlSession session=ssf.openSession(true);
+	   session.update("reserveOk",no);
+	   session.close();
+   }
    
+ 
+
+//<!-- ****좋아요**** --> 
+  public static void likeIncrement(int no)
+  {
+	  SqlSession session=ssf.openSession(true);
+	  session.update("likeIncrement",no);
+	  session.close();
+  }
+ 
+//<!-- ****찜하기**** --> 
+//<!-- ///////////////////////// 찜하기 ///////////////////////////-->  
+  	  public static void jjimInsert(JjimVO vo)
+  	  {
+  		  SqlSession session=ssf.openSession(true);
+  		  session.update("jjimInsert",vo);
+  		  session.close();
+  	  }
+  	   		
+  		
+//<!-- ///////////////////////// 마이페이지 찜 목록 데이터 ///////////////////////////-->    
+	  public static List<JjimVO> jjimListData(String id)
+	  {
+		  SqlSession session=ssf.openSession();
+		  List<JjimVO> list=session.selectList("jjimListData",id);
+		  session.close();
+	  }  
+  
+  
+//<!-- ///////////////////////// 찜 여부 확인하기 위한 용도 ///////////////////////////-->    
+
+		  public int jjimCount(JjimVO vo)
+		  {
+			  SqlSession session=ssf.openSession();
+			  int count=session.selectList("jjimListData",id);
+			  session.close();
+		  } 		  
+		  
+  
+// <!-- ///////////////////////// 찜 취소하기 jjimCount ///////////////////////////-->    
+		  public static void jjimDelete(int no)
 }
 
 

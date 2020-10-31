@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.mapper.board-mapper.xml">
+
+<!-- 목록 출력 -->
+	<select id="boardListData" resultType="BoardVO" parameterType="hashmap">
+		SELECT no,subject,name, TO_CHAR(regdate,'YYYY-MM-DD') as dbday,hit,num
+		FROM (SELECT no,subject,name, regdate,hit,rownum as mum
+		FROM (SELECT no,subject,name, regdate,hit 
+		FROM movie_board ORDER BY no DESC))
+		WHERE num BETWEEN #{start} AND #{end}
+	</select>
+	
+<!-- 새글 작성 -->
+	<insert id="boardInsert" parameterType="BoardVO">
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM movie_board
+		</selectKey>
+		INSERT INTO movie_board VALUES(
+			#{no},
+			#{name},
+			#{subject},
+			#{content},
+			#{pwd},
+			SYSDATE,
+			0
+		)
+	</insert>
+	
+<!-- 총페이지 구하기 -->
+	<select id="boardTotalPage" resultType="int">
+		SELECT CEIL(COUNT(*)/10.0) FROM movie_board
+	</select>
+
+<!-- 조회수 증가 -->
+	<update id="boardhitIncrement" parameterType="int">
+		UPDATE movie_board SET
+		hit=hit+1
+		WHERE no=#{no}
+	</update>
+
+<!-- 내용보기 -->
+	<select id="boardDetailData" parameterType="int" resultType="BoardVO">
+		SELECT * FROM movie_board
+		WHERE no=#{no}
+	</select>
+
+<!-- 댓글 올리기 -->	
+	<insert id="replyInsert" parameterType="com.sist.vo.ReplyVO">
+		<!-- 자동증가 번호 -->
+		<selectKey keyProperty="no" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(no)+1,1) as no FROM movie_reply
+		</selectKey>
+	INSERT INTO movie_reply(no,bno,id,name) VALUES(
+		#{no},
+		#{bno},
+		#{name},
+		#{msg},
+		(SELECT NVL(MAX(group_id)+1,1) FROM movie_reply)
+	)
+	</insert>
+
+<!-- 댓글 목록 출력 -->	
+	<select id="replyListData" resultType="com.sist.vo.ReplyVO" parameterType="int">
+		SELECT no,bno,id,name,msg,TO_CHAR(regdate,'YYYY-MM-DD HH24:MI:SS) as dbday,
+		group_tab FROM movie_reply
+		WHERE bno=#{bno}
+	</select>
+</mapper>

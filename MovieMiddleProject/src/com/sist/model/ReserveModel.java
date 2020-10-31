@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import com.sist.controller.RequestMapping;
 import com.sist.dao.MovieDAO;
+import com.sist.vo.JjimVO;
 import com.sist.vo.MovieVO;
 import com.sist.vo.ReserveVO;
 import com.sist.vo.TheaterVO;
@@ -204,6 +205,26 @@ public class ReserveModel {
 	  List<ReserveVO> list=MovieDAO.mypageReserveListData(id);
 	  request.setAttribute("list", list);
 	  request.setAttribute("main_jsp", "../reserve/mypage.jsp");
+	  
+	  // 찜한 정보 출력
+	  List<JjimVO> jList=MovieDAO.jjimListData(id);
+	  List<MovieVO> mList=new ArrayList<MovieVO>();
+	  for(JjimVO vo:jList)
+	  {
+		  MovieVO mvo=MovieDAO.movieDetailData(vo.getMno());
+		  String story=mvo.getStory();
+		  // 찜 삭제용 jmno 번호 추가하기
+		  mvo.setJmno(vo.getMno());
+		  
+		  
+		  if(story.length()>150)
+		  {
+			  story=story.substring(0,150)+"...";
+			  mvo.setStory(story);
+		  }
+		  mList.add(mvo);
+	  }
+	  request.setAttribute("mList", mList);
 	  return "../main/main.jsp";
   }
 ///////////////////////// 예매 관리 어드민 /////////////////////////////////  
@@ -214,6 +235,29 @@ public class ReserveModel {
 	  request.setAttribute("list", list);
 	  request.setAttribute("main_jsp", "../reserve/adminpage.jsp");
 	  return "../main/main.jsp";
+  }
+  
+///////////////////////// 예매 승인대기 > 승인완료 ///////////////////////////////// 
+  @RequestMapping("reserve/admin_ok.do")
+  public String reserve_admin_ok(HttpServletRequest request)
+  {
+	  // 예약 번호 받기
+	  String no= request.getParameter("no");
+	  // UPDATE하기
+	  MovieDAO.reserveOk(Integer.parseInt(no));
+	  return "redirect:../reserve/adminpage.do";
+  }
+///////////////////////// 여러건 동시에 승인완료시키기 /////////////////////////////////   
+  @RequestMapping("/reserve/reserve_all_ok.do")
+  public String reserve_all_ok(HttpServletRequest request)
+  {
+	  // 데이터 받기
+	  String[] nos=request.getParameterValues("cb");
+	  for(String n:nos)
+	  {
+		  MovieDAO.reserveOk(Integer.parseInt(n));
+	  }
+	  return "redirect:../reserve/adminpage.do";
   }
 }
 

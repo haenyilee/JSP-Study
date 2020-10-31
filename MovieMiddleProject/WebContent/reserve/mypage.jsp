@@ -9,7 +9,7 @@
 </head>
 <body>
 	<table class="table">
-		<caption>찜목록</caption>
+		<caption>예매목록</caption>
 		<tr>
 			<td>
 				<table class="table table-striped">
@@ -44,9 +44,23 @@
 							</td>
 						</tr>					
 					</c:forEach>
-					
 				</table>
-			
+			</td>
+		</tr>
+	</table>
+	<table>
+		<caption>찜목록</caption>
+		<tr>
+			<td>
+				<c:forEach var="vo" items="${mList }">
+					<table class="table">
+						<tr>
+							<td>
+								
+							</td>
+						</tr> 
+					</table>
+				</c:forEach>
 			</td>
 		</tr>
 	</table>

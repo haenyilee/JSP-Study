@@ -1,6 +1,9 @@
 package com.sist.model;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.sist.controller.RequestMapping;
 import java.util.*;
@@ -178,30 +181,125 @@ public class MovieModel {
 	   request.setAttribute("startPage", startPage);
 	   request.setAttribute("endPage", endPage);
 	   request.setAttribute("main_jsp", "../movie/total.jsp");
+	   
+	   // id받기
+	   HttpSession session=request.getSession();
+	   String id=(String)session.getAttribute("id");
+	   
+	   // 쿠키읽기
+	   Cookie[] cookies=request.getCookies();
+	   List<MovieVO> cList=new ArrayList<MovieVO>();
+	   if(cookies!=null)
+	   {
+		   for(int i=0;i<cookies.length;i++)
+		   {
+			   if(cookies[i].getName().startsWith(id))
+			   {
+				   String no=cookies[i].getValue();
+				   MovieVO vo=MovieDAO.movieDetailData(Integer.parseInt(no));
+				   cList.add(vo);
+				   
+			   }
+		   }
+	   }
+	   request.setAttribute("cList", cList);
 	   return "../main/main.jsp";
    }
+//   @RequestMapping("movie/detail.do")
+//   public String movie_detail(HttpServletRequest request)
+//   {
+//	   // 사용자가 보내준 데이터 읽기
+//	   String no=request.getParameter("no");
+//	   String page=request.getParameter("page");
+//	   String cno=request.getParameter("cno");
+//	   if(page==null)
+//		   page="1";
+//	   /*
+//	    *    detail.do
+//	    *    ==> page==null
+//	    *    if(page==null)
+//	    *    detail.do? page= 10   ==>  " 10"  ${ vo.no }
+//	    *    ==> page ""
+//	    *    if(page.equals(""))
+//	    */
+//	   // 상세보기 데이터 읽기 
+//	   // DataBase연결
+//	   
+//	   request.setAttribute("main_jsp", "../movie/detail.jsp");
+//	   return "../main/main.jsp";
+//   }
+// <----------------------------movie detail 전에 cookie 저장하기 ----------------------------------->   
+   @RequestMapping("/movie/detail_before.do")
+   public String movie_detail_before(HttpServletRequest request,HttpServletResponse response) 
+   {
+	   String no=request.getParameter("no");
+	   HttpSession session=request.getSession();
+	   String id=(String)session.getAttribute("id");
+	   Cookie cookie= new Cookie(id+no, no);
+	   
+	   // 저장 기간 설정하기
+	   cookie.setMaxAge(60*60*24);
+	   
+	   // 전송하기
+	   response.addCookie(cookie);
+	   return "redirect:../movie/detail.do?no="+no;
+   }
+// <----------------------------movie detail 화면 보여주기 ----------------------------------->      
    @RequestMapping("movie/detail.do")
    public String movie_detail(HttpServletRequest request)
    {
-	   // 사용자가 보내준 데이터 읽기
 	   String no=request.getParameter("no");
-	   String page=request.getParameter("page");
-	   String cno=request.getParameter("cno");
-	   if(page==null)
-		   page="1";
-	   /*
-	    *    detail.do
-	    *    ==> page==null
-	    *    if(page==null)
-	    *    detail.do? page= 10   ==>  " 10"  ${ vo.no }
-	    *    ==> page ""
-	    *    if(page.equals(""))
-	    */
-	   // 상세보기 데이터 읽기 
-	   // DataBase연결
-	   
+	   // DB연동
+	   MovieVO vo= MovieDAO.movieDetailData(Integer.parseInt(no));
+	   String str=vo.getStory();
+	   if(str.length()>300)
+	   {
+		   str=str.substring(0,300)+"...";
+	   }
+		  
+	   vo.setStory(str);
+	   request.setAttribute("vo", vo);	   
 	   request.setAttribute("main_jsp", "../movie/detail.jsp");
+	   
+	   HttpSession session=request.getSession();
+	   String id=(String)session.getAttribute("id");
+	   JjimVO jvo=new JjimVO();
+	   jvo.setId(id);
+	   jvo.setMno(mno);
+	   jvo.setNo(no);
+	   
+	   
 	   return "../main/main.jsp";
+   }
+// <---------------------------- 좋아요 ----------------------------------->      
+   @RequestMapping("movie/like.do")
+   public String movie_like(HttpServletRequest request)
+   {
+	   String no= request.getParameter("no");
+	   MovieDAO.likeIncrement(Integer.parseInt(no));
+	   return "redirect:../movie/detail/do?no="+no;
+   }
+// <---------------------------- 찜하기 ----------------------------------->      
+   @RequestMapping("movie/jjim.do")
+   public String movie_jjim(HttpServletRequest request)
+   {
+	   String no= request.getParameter("no");
+	   HttpSession session=request.getSession();
+	   String id=(String)session.getAttribute("id");
+	   JjimVO vo=new JjimVO();
+	   vo.setId(id);
+	   vo.setMno(Integer.parseInt(no));
+	   
+	   MovieDAO.jjimInsert(vo);
+	   return "redirect:../movie/detail/do?no="+no;
+   }   
+// <---------------------------- 찜하기 취소 ----------------------------------->    
+   @RequestMapping("movie/jjim_cancle.do")
+   public String movie_jjim_cancle(HttpServletRequest request)
+   {
+	   String no=request.getParameter("no");
+	   MovieDAO.jjimDelete(Integer.parseInt(no));
+	   return "redirect:../reserve/mypage.do";
    }
 }
 

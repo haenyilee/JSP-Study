@@ -136,9 +136,47 @@
   <select id="adminpageReserveListData" resultMap="reserveList">
 	SELECT no,id,title,poster,theater,time,inwon,price,isreserve
 	FROM reserve,movie_info
-	WHERE mno=no
+	WHERE mno=movie_info.no AND isreserve='n'
   </select>
+<!-- ///////////////////////// 승인 대기 > 승인 완료로 변경 ///////////////////////////-->  
+  <update id="reserveOk" parameterType="int">
+  	UPDATE reserve SET
+  	isreserve='y'
+  	WHERE no=#{no}
+  </update>
+
+<!-- ****좋아요**** --> 
+  <update id="likeIncrement" parameterType="int">
+  	UPDATE movie_info SET
+  	hit=hit+1
+  	WHERE no=#{no}
+  </update>
+ 
+<!-- ****찜하기**** --> 
+<!-- ///////////////////////// 찜하기 ///////////////////////////-->  
+  <insert id="jjimInsert" parameterType="com.sist.vo.JjimVO">
+  	INSERT INTO jjim VALUES(
+  		(SELECT NVL(MAX(no)+1,1 FROM jjim),#{id}, #{mno}
+  	)
+  </insert>
+<!-- ///////////////////////// 마이페이지 찜 목록 데이터 ///////////////////////////-->    
+  <select id="jjimListData" parameterType="String" resultMap="com.sist.vo.JjimVO">
+ 	SELECT * FROM jjim
+ 	WHERE id=#{id}
+  </select>
+<!-- ///////////////////////// 찜 여부 확인하기 위한 용도 ///////////////////////////-->    
+  <select id="jjimCount" resultMap="int" parameterType="com.sist.vo.JjimVO">
+ 	SELECT COUNT(*) FROM jjim
+ 	WHERE id=#{id} AND mno=#{mno}
+  </select>  
+  
+ <!-- ///////////////////////// 찜 취소하기 ///////////////////////////-->    
+  <delete id="jjimCount" resultMap="int" parameterType="com.sist.vo.JjimVO">
+ 	d  
+  </delete>
 </mapper>
+
+
 
 
 
